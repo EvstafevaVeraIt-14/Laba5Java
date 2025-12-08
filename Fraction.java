@@ -1,39 +1,33 @@
 package ru.evstafeva.fraction;
 
-import ru.evstafeva.fraction.FractionMethods;
-
-import java.util.Objects; // утилитный класс в Java, который содержит статические методы для работы с объектами
+import java.util.Objects;
 
 public class Fraction implements FractionMethods {
-    private int numerator;      // числитель
-    private int denominator;    // знаменатель
-    private Double cachedDecimalValue; // кэшированное вещественное значение
-    private boolean isCacheValid;      // флаг валидности кэша
+    private int numerator;
+    private int denominator;
 
-
-    public Fraction(int numerator, int denominator) { // конструктор дроби
+    // Конструкторы
+    public Fraction(int numerator, int denominator) {
         setNumeratorAndDenominator(numerator, denominator);
     }
 
-    public Fraction() { // конструктор по умолчанию
+    public Fraction() {
         this(0, 1);
     }
 
+    // Реализация методов интерфейса
     @Override
-    public double getDecimalValue() { //получение вещественного значения
-        if (!isCacheValid || cachedDecimalValue == null) { // если кэш невалиден, то пересчитываем значение
-            cachedDecimalValue = (double) numerator / denominator;
-            isCacheValid = true;
-        }
-        return cachedDecimalValue;
+    public double getDecimalValue() {
+        return (double) numerator / denominator;
     }
 
     @Override
-    public void setNumeratorAndDenominator(int numerator, int denominator) { // сеттер из интерфейса
+    public void setNumeratorAndDenominator(int numerator, int denominator) {
         if (denominator == 0) {
-            throw new IllegalArgumentException("Недопустимое значение. Знаменатель не может быть равен 0");
+            throw new IllegalArgumentException("Знаменатель не может быть равен 0");
         }
 
+        // Нормализация: знаменатель всегда положительный
         if (denominator < 0) {
             numerator = -numerator;
             denominator = -denominator;
@@ -41,49 +35,64 @@ public class Fraction implements FractionMethods {
 
         this.numerator = numerator;
         this.denominator = denominator;
-
-        invalidateCache(); // при установке инвалидируем кэш
     }
 
-    public void setNumerator(int numerator) { // сеттер числителя
-        setNumeratorAndDenominator(numerator, this.denominator);
-    }
-
-    public void setDenominator(int denominator) { //сеттер знаменателя
-        setNumeratorAndDenominator(this.numerator, denominator);
-    }
-
-    public int getNumerator() { // геттер числителя
+    // Геттеры (не часть интерфейса!)
+    public int getNumerator() {
         return numerator;
     }
 
-    public int getDenominator() { // геттер знаменателя
+    public int getDenominator() {
         return denominator;
     }
 
-   private void invalidateCache() { // инвалидация значения в кэше (неактуален)
-        isCacheValid = false;
-        cachedDecimalValue = null;
+    // Сеттеры (не часть интерфейса, кроме общего метода)
+    public void setNumerator(int numerator) {
+        setNumeratorAndDenominator(numerator, this.denominator);
     }
 
+    public void setDenominator(int denominator) {
+        setNumeratorAndDenominator(this.numerator, denominator);
+    }
 
+    // Остальные методы (toString, equals, hashCode) без изменений
     @Override
-    public String toString() { //троковое представление
+    public String toString() {
         return numerator + "/" + denominator;
     }
 
     @Override
-    public boolean equals(Object obj) { // сравнение дробей по числителю и знаменателю
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Fraction other = (Fraction) obj;
-        return numerator == other.numerator && denominator == other.denominator;
+        // Сравниваем в нормализованном виде
+        Fraction reducedThis = this.reduce();
+        Fraction reducedOther = other.reduce();
+
+        return reducedThis.numerator == reducedOther.numerator &&
+                reducedThis.denominator == reducedOther.denominator;
     }
 
     @Override
-    public int hashCode() { //хэш-код
-        return Objects.hash(numerator, denominator);
+    public int hashCode() {
+        Fraction reduced = this.reduce();
+        return Objects.hash(reduced.numerator, reduced.denominator);
     }
 
+    // Вспомогательные методы
+    public Fraction reduce() {
+        int gcd = gcd(Math.abs(numerator), denominator);
+        return new Fraction(numerator / gcd, denominator / gcd);
+    }
+
+    private int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
 }

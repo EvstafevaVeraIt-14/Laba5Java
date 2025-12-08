@@ -1,11 +1,10 @@
 package ru.evstafeva.main;
 
 import ru.evstafeva.error.Check;
-import ru.evstafeva.fraction.Fraction;
+import ru.evstafeva.fraction.CachedFraction;
 import ru.evstafeva.cats.Cat;
 import ru.evstafeva.cats.Funs;
 import ru.evstafeva.cats.CountMeow;
-import ru.evstafeva.ListWithAnInsert;
 import ru.evstafeva.line.Point;
 import ru.evstafeva.line.Polyline;
 
@@ -13,17 +12,15 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Set;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -62,11 +59,11 @@ public class Main {
                             "• Переопределите метод сравнения объектов по состоянию таким образом, чтобы две дроби\n" +
                             "считались одинаковыми тогда, когда у них одинаковые значения числителя и знаменателя.\n");
 
-                    Fraction fraction1 = new Fraction(1, 2);
-                    Fraction fraction2 = new Fraction(7, 28);
-                    Fraction fraction3 = new Fraction(1, 2);
-                    Fraction fraction4 = new Fraction(-9, 10);
-                    Fraction fraction5 = new Fraction(70, -5);
+                    CachedFraction fraction1 = new CachedFraction(1, 2);
+                    CachedFraction fraction2 = new CachedFraction(7, 28);
+                    CachedFraction fraction3 = new CachedFraction(1, 2);
+                    CachedFraction fraction4 = new CachedFraction(-9, 10);
+                    CachedFraction fraction5 = new CachedFraction(70, -5);
 
                     System.out.println("Дробь 1: " + fraction1 + " = " + fraction1.getDecimalValue());
                     System.out.println("Дробь 2: " + fraction2 + " = " + fraction2.getDecimalValue());
@@ -121,23 +118,36 @@ public class Main {
                     System.out.println("\nСоставить программу, которая вставляет в список L за первым вхождением элемента E все\n" +
                             "элементы списка L, если E входит в L.\n");
 
-                    System.out.println("Демонстрация вставки на списке из целых чисел:\n");
-                    List<Integer> list1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 1, 2, 2, 3, 3, 8));
-                    System.out.print("Изначальный список:");
-                    System.out.println(list1);
-                    System.out.println("Вставка списка после элемента '2':");
-                    ListWithAnInsert.insert(list1, 2);
-                    System.out.print("Преобразованный список:");
-                    System.out.println(list1);
+                    System.out.println("1. Целые числа:");
+                    UsersList<Integer> intList = new UsersList<>();
+                    intList.add(1);
+                    intList.add(2);
+                    intList.add(3);
+                    intList.add(4);
 
-                    System.out.println("\nДемонстрация вставки на списке из букв:\n");
-                    List<String> list2 = new ArrayList<>(Arrays.asList("A", "B", "F", "C", "O"));
-                    System.out.print("Изначальный список:");
-                    System.out.println(list2);
-                    System.out.println("Вставка списка после элемента 'F':");
-                    ListWithAnInsert.insert(list2, "F");
-                    System.out.print("Преобразованный список:");
-                    System.out.println(list2);
+                    System.out.println("Созданный список: " + intList);
+                    System.out.println("Вставка после 2:");
+                    intList.insertCopyAfter(2);
+                    System.out.println("Результат: " + intList);
+
+                    System.out.println("\n2. Строки:");
+                    UsersList<String> strList = new UsersList<>();
+                    strList.add("A");
+                    strList.add("B");
+                    strList.add("C");
+                    strList.add("D");
+
+                    System.out.println("Созданный список: " + strList);
+                    System.out.println("Вставка после С:");
+                    strList.insertCopyAfter("C");
+                    System.out.println("Результат: " + strList);
+
+                    System.out.println("\n3. Вещественные числа:");
+                    UsersList<Double> doubleList = new UsersList<>(List.of(1.5, 2.7, 3.1));
+                    System.out.println("Созданный список: " + doubleList);
+                    System.out.println("Вставка после 2.7:");
+                    doubleList.insertCopyAfter(2.7);
+                    System.out.println("Результат: " + doubleList);
                     break;
                 }
                 case 4: {
@@ -164,26 +174,27 @@ public class Main {
                     System.out.print("Введите количество абитуриентов: ");
                     int n = check.checkAnInteger();
 
-                    Map<String, int[]> applicants = new HashMap<>();
+                    if (n > 500) {
+                        System.out.println("Количество абитуриентов не должно превышать 500");
+                        break;
+                    }
+
                     List<String> admitted = new ArrayList<>();
 
-                    System.out.println("Введите данные абитуриентов (Фамилия Имя балл1 балл2 балл3):");
+                    System.out.println("Введите данные абитуриентов:");
                     for (int i = 0; i < n; i++) {
                         System.out.print("Абитуриент " + (i + 1) + ": ");
 
                         String lastName = check.checkString();
                         String firstName = check.checkString();
-                        String fullName = lastName + " " + firstName;
 
                         int score1 = check.checkScore("балл1");
                         int score2 = check.checkScore("балл2");
                         int score3 = check.checkScore("балл3");
 
-                        applicants.put(fullName, new int[]{score1, score2, score3});
-
                         if (score1 >= 30 && score2 >= 30 && score3 >= 30 &&
                                 (score1 + score2 + score3) >= 140) {
-                            admitted.add(fullName);
+                            admitted.add(lastName + " " + firstName);
                         }
                     }
 
@@ -217,7 +228,7 @@ public class Main {
                         while ((line = reader.readLine()) != null) {
                             line = line.toLowerCase(); // нижний регистр
                             for (char c : line.toCharArray()) {
-                                if (allLetters.contains(c)) { //сли является русской буквой
+                                if (allLetters.contains(c)) { // если является русской буквой
                                     discoveredLetters.add(c);
                                 }
                             }
@@ -239,28 +250,21 @@ public class Main {
                     System.out.println("По списку L построить очередь (например, по списку из элементов 1, 2, 3 требуется построить\n" +
                             "очередь из элементов 1, 2, 3, 3, 2, 1).");
 
-                    System.out.print("Введите количество элементов в списке: ");
-                    int n = check.checkAnInteger();
+                    System.out.println("\nОчередь с целыми числами:\n");
+                    List<Integer> numbers = Arrays.asList(1, 3, 5, 7);
+                    MyQueue<Integer> intQueue = new MyQueue<>(numbers);
 
-                    List<Integer> L = new ArrayList<>();
-                    System.out.print("Введите " + n + " элементов:");
-                    for (int i = 0; i < n; i++) {
-                        L.add(check.checkAnInteger());
-                    }
+                    System.out.println("Исходный список: " + numbers);
+                    System.out.println("Результирующая очередь: " + intQueue);
 
-                    System.out.println("Исходный список L: " + L);
 
-                    Queue<Integer> queue = new LinkedList<>();
+                    System.out.println("Очередь со строками:\n");
+                    List<String> strings = Arrays.asList("A", "B", "C", "D", "B", "F", "D");
+                    MyQueue<String> stringQueue = new MyQueue<>(strings);
 
-                    for (int i = 0; i < L.size(); i++) { //слева-направо
-                        queue.add(L.get(i));
-                    }
+                    System.out.println("Исходный список: " + strings);
+                    System.out.println("Результирующая очередь: " + stringQueue);
 
-                    for (int i = L.size() - 1; i >= 0; i--) { // справа-налево
-                        queue.add(L.get(i));
-                    }
-
-                    System.out.println("Результирующая очередь: " + queue);
                     break;
                 }
                 case 7: {
@@ -306,35 +310,24 @@ public class Main {
 
                                 // Стрим для обработки точек
                                 Polyline polyline = points.stream()
-                                        .distinct()
-                                        .sorted(Comparator.comparing(Point::getX))
-                                        .map(Point::makeYPositive)
+                                        .distinct() // удаление дубликатов
+                                        .sorted(Comparator.comparing(Point::getX)) // сортировка по X
+                                        .map(Point::makeYPositive) // преобразование Y в положительные
                                         .collect(Collectors.collectingAndThen(
                                                 Collectors.toList(),
-                                                Polyline::new
+                                                Polyline::new // сбор в Polyline
                                         ));
 
                                 System.out.println("Результирующая ломаная: " + polyline);
                                 break;
                             }
                             case 2: {
-                                System.out.println("Дан текстовый файл со строками, содержащими имя человека и его номер в следующей форме:\n" +
-                                        "Вася:5\n" +
-                                        "Петя:3\n" +
-                                        "Аня:5\n" +
-                                        "Номера людей могут повторяться. У каких-то людей может не быть номера.\n" +
-                                        "Необходимо написать стрим выполняющую следующее:\n" +
-                                        "читаются все люди из файла, все имена приводится к нижнему регистру, но с первой буквой в\n" +
-                                        "верхнем регистре, убираем из перечня всех людей без номеров, а имена оставшихся группируются\n" +
-                                        "по их номеру:\n" +
-                                        "[5:[Вася, Аня], 3:[Петя]]\n");
-
-                                file2 = "C:\\Users\\HONOR\\IdeaProjects\\Laba5\\src\\ru\\evstafeva\\main\\task7.txt";
-
                                 try {
+                                    String filePath = "C:\\Users\\HONOR\\IdeaProjects\\Laba5\\src\\ru\\evstafeva\\main\\task7.txt";
 
+                                    // Чтение всех строк из файла
                                     List<String> lines = new ArrayList<>();
-                                    BufferedReader reader = new BufferedReader(new FileReader(file2));
+                                    BufferedReader reader = new BufferedReader(new FileReader(filePath));
                                     String line;
                                     while ((line = reader.readLine()) != null) {
                                         lines.add(line);
@@ -345,59 +338,59 @@ public class Main {
                                     lines.forEach(System.out::println);
                                     System.out.println();
 
-                                    // Обрабатываем данные стримом
+                                    // Обработка стримом
                                     Map<String, List<String>> result = lines.stream()
-                                            // Разбиваем строку на имя и номер
-                                            .map(str -> str.split(":"))
-                                            // Убираем людей без номеров (где нет двоеточия или номер пустой)
-                                            .filter(parts -> parts.length == 2 && !parts[1].trim().isEmpty())
-                                            // Преобразуем имена: в нижний регистр, но с первой буквой в верхнем
-                                            .map(parts -> {
+                                            .map(str -> str.split(":", 2))// разбиваем строку на имя и номер c
+                                            .filter(parts -> parts.length == 2)// должны быть обе части и обе не пустые
+                                            .filter(parts -> {
                                                 String name = parts[0].trim();
                                                 String number = parts[1].trim();
-                                                // Приводим имя к нужному формату
-                                                if (!name.isEmpty()) {
-                                                    name = name.substring(0, 1).toUpperCase() +
+                                                return !name.isEmpty() && !number.isEmpty();
+                                            })
+                                            .map(parts -> { // обрабатываем каждую запись: первая буква заглавная, остальные строчные
+                                                String name = parts[0].trim();
+                                                String number = parts[1].trim();
+                                                if (name.length() > 0) {
+                                                    name = Character.toUpperCase(name.charAt(0)) +
                                                             name.substring(1).toLowerCase();
                                                 }
-                                                return new String[]{name, number};
+
+                                                return new AbstractMap.SimpleEntry<>(number, name);
                                             })
-                                            // Группируем по номеру
-                                            .collect(Collectors.groupingBy(
-                                                    parts -> parts[1],  // ключ - номер
+                                            .collect(Collectors.groupingBy( // группируем по номеру
+                                                    Map.Entry::getKey,
                                                     Collectors.mapping(
-                                                            parts -> parts[0],  // значение - имя
-                                                            Collectors.toList()  // собираем в список
+                                                            Map.Entry::getValue,
+                                                            Collectors.toList()
                                                     )
                                             ));
 
-                                    // Красивый вывод с : вместо =
                                     System.out.println("Результат группировки:");
-                                    System.out.print("[");
-                                    boolean first = true;
+                                    StringBuilder output = new StringBuilder("[");
+                                    boolean firstGroup = true;
+
                                     for (Map.Entry<String, List<String>> entry : result.entrySet()) {
-                                        if (!first) {
-                                            System.out.print(", ");
+                                        if (!firstGroup) {
+                                            output.append(", ");
                                         }
-                                        System.out.print(entry.getKey() + ":[" + String.join(", ", entry.getValue()) + "]");
-                                        first = false;
+                                        output.append(entry.getKey())
+                                                .append(":[")
+                                                .append(String.join(", ", entry.getValue()))
+                                                .append("]");
+                                        firstGroup = false;
                                     }
-                                    System.out.println("]");
+                                    output.append("]");
+
+                                    System.out.println(output.toString());
 
                                 } catch (IOException e) {
                                     System.out.println("Ошибка при чтении файла: " + e.getMessage());
                                 }
-                                break;
                             }
-                            case 0: {
-                                System.out.println("Выход из программы");
-                                subtask = false;
-                                break;
-                            }
-                            default:
-                                System.out.println("Неверный выбор, попробуйте снова");
+
                         }
                     }
+                    break;
                 }
                 case 0: {
                     System.out.println("Выход из программы");
