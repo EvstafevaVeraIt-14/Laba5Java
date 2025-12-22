@@ -9,8 +9,19 @@ public class Line {
         this.end = end;
     }
 
-    public Point getStart() { return start; }
-    public Point getEnd() { return end; }
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getEnd() {
+        return end;
+    }
+
+    public double getLength() {
+        double dx = end.getX() - start.getX();
+        double dy = end.getY() - start.getY();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 
     @Override
     public String toString() {

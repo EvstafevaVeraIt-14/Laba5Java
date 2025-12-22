@@ -1,41 +1,43 @@
 package ru.evstafeva.fraction;
 
-public class CachedFraction implements FractionMethods {
-    private final FractionMethods fraction;
-    private Double cachedValue;
-    private boolean isCacheValid;
-
-    public CachedFraction(FractionMethods fraction) {
-        this.fraction = fraction;
-        this.isCacheValid = false;
-    }
+public class CachedFraction extends Fraction {
+    private Double cachedDecimalValue = null;
 
     public CachedFraction(int numerator, int denominator) {
-        this(new Fraction(numerator, denominator));
+        super(numerator, denominator);
     }
 
     @Override
     public double getDecimalValue() {
-        if (!isCacheValid) {
-            cachedValue = fraction.getDecimalValue();
-            isCacheValid = true;
+        if (cachedDecimalValue == null) {
+            cachedDecimalValue = super.getDecimalValue();
         }
-        return cachedValue;
+        return cachedDecimalValue;
     }
 
     @Override
     public void setNumeratorAndDenominator(int numerator, int denominator) {
-        fraction.setNumeratorAndDenominator(numerator, denominator);
-        invalidateCache();
-    }
-
-    private void invalidateCache() {
-        isCacheValid = false;
-        cachedValue = null;
+        super.setNumeratorAndDenominator(numerator, denominator);
+        cachedDecimalValue = null;
     }
 
     @Override
-    public String toString() {
-        return fraction.toString();
+    public void setNumerator(int numerator) {
+        super.setNumerator(numerator);
+        cachedDecimalValue = null;
+    }
+
+    @Override
+    public void setDenominator(int denominator) {
+        super.setDenominator(denominator);
+        cachedDecimalValue = null;
+    }
+
+    public boolean hasCachedValue() {
+        return cachedDecimalValue != null;
+    }
+
+    public Double getCachedValue() {
+        return cachedDecimalValue;
     }
 }

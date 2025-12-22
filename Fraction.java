@@ -6,7 +6,6 @@ public class Fraction implements FractionMethods {
     private int numerator;
     private int denominator;
 
-    // Конструкторы
     public Fraction(int numerator, int denominator) {
         setNumeratorAndDenominator(numerator, denominator);
     }
@@ -15,7 +14,6 @@ public class Fraction implements FractionMethods {
         this(0, 1);
     }
 
-    // Реализация методов интерфейса
     @Override
     public double getDecimalValue() {
         return (double) numerator / denominator;
@@ -37,7 +35,7 @@ public class Fraction implements FractionMethods {
         this.denominator = denominator;
     }
 
-    // Геттеры (не часть интерфейса!)
+
     public int getNumerator() {
         return numerator;
     }
@@ -46,7 +44,6 @@ public class Fraction implements FractionMethods {
         return denominator;
     }
 
-    // Сеттеры (не часть интерфейса, кроме общего метода)
     public void setNumerator(int numerator) {
         setNumeratorAndDenominator(numerator, this.denominator);
     }
@@ -67,7 +64,6 @@ public class Fraction implements FractionMethods {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Fraction other = (Fraction) obj;
-        // Сравниваем в нормализованном виде
         Fraction reducedThis = this.reduce();
         Fraction reducedOther = other.reduce();
 
